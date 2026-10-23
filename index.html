@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="bn">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#12372a">
+  <title>দোকান হিসাব</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <div class="eyebrow">সহজ দোকান ম্যানেজমেন্ট</div>
+      <h1>দোকান হিসাব</h1>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-light" id="exportBtn">ব্যাকআপ নিন</button>
+      <label class="btn btn-light file-label">ব্যাকআপ ফেরত নিন<input type="file" id="importFile" accept=".json,application/json" hidden></label>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="stats">
+      <article class="stat-card"><span>আজকের বিক্রি</span><strong id="todaySales">৳০</strong></article>
+      <article class="stat-card"><span>খোলা বিল</span><strong id="openCount">০</strong></article>
+      <article class="stat-card"><span>আজকের সম্পন্ন বিল</span><strong id="paidCount">০</strong></article>
+    </section>
+
+    <nav class="tabs" aria-label="প্রধান মেনু">
+      <button class="tab active" data-tab="sales">বিক্রি / বিল</button>
+      <button class="tab" data-tab="products">পণ্য ও দাম</button>
+      <button class="tab" data-tab="history">বিলের ইতিহাস</button>
+    </nav>
+
+    <section id="salesTab" class="tab-panel">
+      <div class="section-heading">
+        <div><h2>কাস্টমারের বিল</h2><p>একজন কাস্টমারকে নির্বাচন করে পণ্য যোগ করুন।</p></div>
+        <button class="btn btn-primary" id="newCustomerBtn">＋ নতুন কাস্টমার</button>
+      </div>
+      <div class="sales-layout">
+        <section class="panel">
+          <h3>খোলা বিলগুলো</h3>
+          <div id="customerList" class="customer-list"></div>
+          <div class="hint">কাস্টমার চলে যাওয়ার আগে তার বিল নির্বাচন করে মোট টাকা নিন।</div>
+        </section>
+        <section class="panel product-panel">
+          <div class="panel-heading"><h3>পণ্য বাছাই</h3><input id="productSearch" class="search" placeholder="পণ্যের নাম খুঁজুন…" autocomplete="off"></div>
+          <div id="categoryFilters" class="filters"></div>
+          <div id="productGrid" class="product-grid"></div>
+        </section>
+        <section class="panel bill-panel">
+          <div class="bill-title"><div><h3 id="billCustomerTitle">কাস্টমার নির্বাচন করুন</h3><small id="billSubtitle">পণ্য যোগ করলে এখানে দেখা যাবে</small></div><button id="clearBillBtn" class="text-btn">বিল খালি</button></div>
+          <div id="billItems" class="bill-items"><div class="empty">প্রথমে একটি কাস্টমার তৈরি বা নির্বাচন করুন।</div></div>
+          <div class="bill-total"><span>সর্বমোট</span><strong id="billTotal">৳০</strong></div>
+          <button id="payBtn" class="btn btn-success full" disabled>টাকা নিয়েছি · বিল সম্পন্ন</button>
+        </section>
+      </div>
+    </section>
+
+    <section id="productsTab" class="tab-panel hidden">
+      <div class="section-heading"><div><h2>পণ্য ও দাম</h2><p>প্রতিটি ব্র্যান্ড, প্যাকেট ও শলাকার দাম আলাদা পণ্য হিসেবে রাখুন।</p></div></div>
+      <form id="productForm" class="panel product-form">
+        <h3 id="formTitle">নতুন পণ্য যোগ করুন</h3>
+        <input type="hidden" id="productId">
+        <label>পণ্যের নাম<input id="productName" required maxlength="80" placeholder="যেমন: ব্র্যান্ড X সিগারেট — ১ শলাকা"></label>
+        <div class="form-row">
+          <label>দাম (টাকা)<input id="productPrice" type="number" min="0.01" step="0.01" required placeholder="১০"></label>
+          <label>ক্যাটাগরি<select id="productCategory"><option>চা ও নাস্তা</option><option>সিগারেট</option><option>বিস্কুট</option><option>চিপস</option><option>কলা ও ফল</option><option>দুধ</option><option>অন্যান্য</option></select></label>
+        </div>
+        <label>একক / ধরন<input id="productUnit" maxlength="30" placeholder="যেমন: ১ কাপ, ১ পিস, ১ শলাকা, ১ প্যাকেট"></label>
+        <div class="form-actions"><button class="btn btn-primary" type="submit" id="saveProductBtn">পণ্য সেভ করুন</button><button class="btn btn-light" type="button" id="cancelEditBtn">ফর্ম রিসেট</button></div>
+      </form>
+      <section class="panel"><div class="panel-heading"><h3>পণ্যের তালিকা</h3><input id="manageSearch" class="search" placeholder="পণ্য খুঁজুন…"></div><div class="table-wrap"><table><thead><tr><th>পণ্য</th><th>ক্যাটাগরি</th><th>একক</th><th>দাম</th><th>কাজ</th></tr></thead><tbody id="productTable"></tbody></table></div></section>
+      <p class="hint">সিগারেটের শলাকা ও প্যাকেটের হিসাব আলাদা রাখতে হলে আলাদা পণ্য যোগ করুন এবং একক লিখে দিন। উদাহরণ: “ব্র্যান্ড X — ১ শলাকা” ও “ব্র্যান্ড X — ১ প্যাকেট”। দামগুলো আপনার দোকানের প্রকৃত দাম দিয়ে বদলান।</p>
+    </section>
+
+    <section id="historyTab" class="tab-panel hidden">
+      <div class="section-heading"><div><h2>বিলের ইতিহাস</h2><p>সম্পন্ন বিলগুলো এখানে থাকবে।</p></div><button class="btn btn-light" id="historyExportBtn">ইতিহাস CSV</button></div>
+      <section class="panel"><div class="table-wrap"><table><thead><tr><th>বিল</th><th>কাস্টমার</th><th>সময়</th><th>আইটেম</th><th>মোট</th></tr></thead><tbody id="historyTable"></tbody></table></div><div id="historyEmpty" class="empty">এখনও কোনো বিল সম্পন্ন হয়নি।</div></section>
+    </section>
+    <footer>আপনার দোকানের হিসাব সহজ রাখুন · ডেটা এই ব্রাউজারেই সংরক্ষিত হয়</footer>
+  </main>
+  <div id="toast" class="toast" role="status"></div>
+  <script src="app.js"></script>
+</body>
+</html>
